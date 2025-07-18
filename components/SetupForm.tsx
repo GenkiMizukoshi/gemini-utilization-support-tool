@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { TASKS, AI_MODEL } from '../constants';
 import { TaskData, FieldDef } from '../types';
@@ -12,13 +11,26 @@ interface SetupFormProps {
     error: string | null;
 }
 
+const getInitialFormData = (taskKey: string): TaskData => {
+    const task = TASKS[taskKey];
+    if (!task) return {};
+    const initialData: TaskData = {};
+    task.fields.forEach(field => {
+        if (field.type === 'select' && field.options && field.options.length > 0) {
+            initialData[field.id] = field.options[0];
+        }
+    });
+    return initialData;
+};
+
 const SetupForm: React.FC<SetupFormProps> = ({ onStartChat, isLoading, error }) => {
     const [selectedTaskKey, setSelectedTaskKey] = useState(Object.keys(TASKS)[0]);
-    const [formData, setFormData] = useState<TaskData>({});
+    const [formData, setFormData] = useState<TaskData>(() => getInitialFormData(selectedTaskKey));
 
     const handleTaskChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedTaskKey(e.target.value);
-        setFormData({}); // Reset form data when task changes
+        const newKey = e.target.value;
+        setSelectedTaskKey(newKey);
+        setFormData(getInitialFormData(newKey));
     };
 
     const handleFormChange = useCallback((id: string, value: string | File) => {
