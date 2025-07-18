@@ -3,11 +3,13 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ChatMessage, ChatMessagePart } from '../types';
 import { AI_MODEL } from '../constants';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!apiKey) {
+    throw new Error("VITE_GEMINI_API_KEY environment variable not set");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: apiKey });
 
 const generationConfig = {
     temperature: 0.5,
